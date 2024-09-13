@@ -18,6 +18,16 @@ export const PUBLIC_ROUTES: Array<CustomRouter> = [
     element: <Auth />,
   },
   {
+    path: `${ROUTES_CONFIG.RESET_PASSWORD.path}`,
+    title: ROUTES_CONFIG.LOGIN.title,
+    element: <Auth />,
+  },
+  {
+    path: `${ROUTES_CONFIG.FORGOT_PASSWORD.path}`,
+    title: ROUTES_CONFIG.LOGIN.title,
+    element: <Auth />,
+  },
+  {
     path: '*',
     element: <Navigate to={WILDCARD_ROUTES.PUBLIC} />,
     title: 'Rendering wildcard',

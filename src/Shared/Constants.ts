@@ -6,7 +6,9 @@ const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   ABOUT: '/about-us',
-  TESTING: "/testing"
+  TESTING: "/testing",
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
 };
 
 const WILDCARD_ROUTES = { /// This is a wildcard route that will match any path that is not defined in the ROUTES object.
@@ -27,6 +29,14 @@ const ROUTES_CONFIG = {
     path: ROUTES.REGISTER,
     title: 'Register',
   },
+  FORGOT_PASSWORD: {
+    path: ROUTES.FORGOT_PASSWORD,
+    title: "Forgot Password"
+  },
+  RESET_PASSWORD: {
+    path: ROUTES.RESET_PASSWORD,
+    title: "Reset Password"
+  }
 
 };
 const ALIGNMENT = {

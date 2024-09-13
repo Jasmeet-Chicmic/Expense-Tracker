@@ -7,9 +7,9 @@ import RootRouter from './Routes/RootRouter';
 import 'firebaseui/dist/firebaseui.css';
 import './App.css';
 import Loader from './Components/Shared/Form/Loader/Loader';
+import NotificationWrapper from './Components/Layouts/Public/NotificationWrapper';
 
 const baseName = import.meta.env.VITE_BASE_NAME;
-console.log('Base Name', baseName);
 
 function App() {
   // const [count, setCount] = useState<number>(0);
@@ -18,9 +18,11 @@ function App() {
       <PersistGate persistor={persistor}>
         <Loader></Loader>
         <HelmetProvider>
-          <BrowserRouter basename={baseName}>
-            <RootRouter />
-          </BrowserRouter>
+          <NotificationWrapper>
+            <BrowserRouter basename={baseName}>
+              <RootRouter />
+            </BrowserRouter>
+          </NotificationWrapper>
         </HelmetProvider>
       </PersistGate>
     </Provider>
