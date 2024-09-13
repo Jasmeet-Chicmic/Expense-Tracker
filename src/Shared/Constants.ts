@@ -1,3 +1,4 @@
+
 const STRING: string = 'Test';
 export { STRING };
 
@@ -9,6 +10,8 @@ const ROUTES = {
   TESTING: "/testing",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
+  DASHBOARD_HOMEPAGE: "/dashboard-homepage",
+  TRANSACTIONS: "/transactions",
 };
 
 const WILDCARD_ROUTES = { /// This is a wildcard route that will match any path that is not defined in the ROUTES object.
@@ -36,7 +39,15 @@ const ROUTES_CONFIG = {
   RESET_PASSWORD: {
     path: ROUTES.RESET_PASSWORD,
     title: "Reset Password"
-  }
+  },
+  DASHBOARD_HOMEPAGE: {
+    path: ROUTES.DASHBOARD_HOMEPAGE,
+    title: 'Dashboard',
+},
+  TRANSACTIONS: {
+    path: ROUTES.TRANSACTIONS,
+    title: 'Dashboard',
+}
 
 };
 const ALIGNMENT = {

@@ -15,7 +15,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import api from '../Services/Api/api';
 import common from './Common';
 import loader from './Loader';
-
+import user from './User';
 const rootPersistConfig = {
   key: 'root',
   storage,
@@ -24,6 +24,7 @@ const rootPersistConfig = {
 const reducers = combineReducers({
   common,
   loader,
+  user,
   [api.reducerPath]: api.reducer,
 });
 
