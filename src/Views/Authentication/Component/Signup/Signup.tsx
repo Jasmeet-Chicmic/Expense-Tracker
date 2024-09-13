@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import CustomForm from '../../../../Components/Shared/Form/CustomForm';
 import { SIGN_UP_FORM_SCHEMA } from './helper/signUpSchema';
 import { ROUTES } from '../../../../Shared/Constants';
-import { auth } from '../../../../firebase/firebase';
+import { auth, db } from '../../../../firebase/firebase';
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -10,11 +10,28 @@ import {
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../../Store/Loader';
 import useNotifications from '../../../../Hooks/useNotifications';
+import { doc, setDoc } from 'firebase/firestore';
 
 const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { notifySuccess, notifyError } = useNotifications();
+
+  const setUserData = async (user: any, values: any) => {
+    console.log('values', values);
+
+    try {
+    await setDoc(doc(db, 'users', user.uid), {
+      Username: values?.username,
+      Email: user.email,
+      PhotoUrl: user.photoURL || '',
+      CreatedAt: new Date(),
+    });
+  }
+  catch (error) {
+    console.log('Error setting user data: ', error);
+  }
+  };
   const handleSignup = async (values: any) => {
     dispatch(setLoading(true));
 
@@ -30,6 +47,12 @@ const Signup = () => {
       // Send email verification
       await sendEmailVerification(user);
       notifySuccess('Verification email sent. Please verify your email.');
+      try {
+        await setUserData(user, values);
+        console.log('User data set successfully');
+      } catch (error) {
+        console.log('Error setting user data: ', error);
+      }
 
       // Stop the loader and navigate to login page
       dispatch(setLoading(false));
@@ -53,8 +76,8 @@ const Signup = () => {
         isDisabledSubmit={false}
         submitText="Sign Up"
       />
-      <div >
-        <p >
+      <div>
+        <p>
           Already have an account?{' '}
           <span
             onClick={() => {

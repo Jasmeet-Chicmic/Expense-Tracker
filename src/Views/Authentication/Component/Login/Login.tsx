@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import CustomForm from '../../../../Components/Shared/Form/CustomForm';
-import { auth, ui } from '../../../../firebase/firebase';
+import { auth, db, ui } from '../../../../firebase/firebase';
 import { LOGIN_FORM_SCHEMA } from './helper/loginSchema';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -11,7 +11,7 @@ import { updateAuthTokenRedux } from '../../../../Store/Common';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../../Store/Loader';
 import useNotifications from '../../../../Hooks/useNotifications';
-import { updateUserData } from '../../../../Store/User';
+import { doc, setDoc } from 'firebase/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,6 +19,20 @@ const Login = () => {
   const { notifySuccess, notifyError } = useNotifications();
   useEffect(() => {
     // Initialize FirebaseUI Auth with config
+    const setUserData = async (user: any, values?: any) => {
+      console.log('values', values);
+
+      try {
+        await setDoc(doc(db, 'users', user.uid), {
+          Username: user.displayName || 'dummy',
+          Email: user.email,
+          PhotoUrl: user.photoURL || '',
+          CreatedAt: new Date(),
+        });
+      } catch (error) {
+        console.log('Error setting user data: ', error);
+      }
+    };
     const uiConfig = {
       signInFlow: 'popup',
       signInSuccessUrl: ROUTES.HOMEPAGE,
@@ -39,12 +53,8 @@ const Login = () => {
             // Check if logged in via Google provider
             if (providerData === firebase.auth.GoogleAuthProvider.PROVIDER_ID) {
               console.log('User logged in with Google:', user);
-              dispatch(
-                updateUserData({
-                  userName: user.displayName || 'dummy',
-                  photoUrl: user.photoURL,
-                })
-              );
+              setUserData(user);
+
               // Dispatch the auth token to Redux store
               dispatch(updateAuthTokenRedux({ token: user?.accessToken }));
             }
@@ -69,6 +79,7 @@ const Login = () => {
 
   const handleLogin = (data: any) => {
     dispatch(setLoading(true));
+
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         // Signed in
@@ -78,12 +89,6 @@ const Login = () => {
           notifySuccess('Logged in successfully!');
           dispatch(setLoading(false));
 
-          dispatch(
-            updateUserData({
-              userName: user.displayName || 'dummy',
-              photoUrl: user.photoURL || '',
-            })
-          );
           dispatch(updateAuthTokenRedux({ token: user?.accessToken }));
           navigate(ROUTES.HOMEPAGE);
         } else {

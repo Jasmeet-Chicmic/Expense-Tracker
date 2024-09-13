@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 
 import * as firebaseui from 'firebaseui';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-
+import { getFirestore } from "firebase/firestore";
 console.log(import.meta.env.VITE_FIREBASE_API_KEY);
 
 // Firebase configuration using environment variables
@@ -24,7 +24,7 @@ provider.setCustomParameters({
 });
 // Initialize Firebase app
 const app = initializeApp(firebaseConfig);
-
+export const db = getFirestore(app)
 // Get Firebase Auth instance
 export const auth = getAuth(app);
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
