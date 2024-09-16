@@ -8,9 +8,10 @@ import 'firebaseui/dist/firebaseui.css';
 import './App.css';
 import Loader from './Components/Shared/Form/Loader/Loader';
 import NotificationWrapper from './Components/Layouts/Public/NotificationWrapper';
-
+import ModalManager from './Shared/Modal/ModalManager';
+import Modal from 'react-modal';
 const baseName = import.meta.env.VITE_BASE_NAME;
-
+Modal.setAppElement('#root');
 function App() {
   // const [count, setCount] = useState<number>(0);
   return (
@@ -20,6 +21,7 @@ function App() {
         <HelmetProvider>
           <NotificationWrapper>
             <BrowserRouter basename={baseName}>
+              <ModalManager></ModalManager>
               <RootRouter />
             </BrowserRouter>
           </NotificationWrapper>

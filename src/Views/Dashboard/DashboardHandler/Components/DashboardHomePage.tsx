@@ -1,3 +1,4 @@
+import AdditionButtons from "./DashboardHomePageComponents/AdditionButtons"
 import OverView from "./DashboardHomePageComponents/OverView"
 import SpendFrequency from "./DashboardHomePageComponents/SpendFrequency"
 import TransactionSection from "./DashboardHomePageComponents/TransactionSection"
@@ -5,8 +6,9 @@ import TransactionSection from "./DashboardHomePageComponents/TransactionSection
 const DashboardHomePage = () => {
   return (
     <div className="flex flex-col h-screen text-white">
-        <div className="text-3xl font-bold h-[80px] flex p-4 justify-start items-center">
-            Dashboard
+        <div className="text-3xl font-bold h-[80px] flex p-4 justify-between items-center">
+            <div>Dashboard</div>
+           <AdditionButtons></AdditionButtons>
          
         </div>
 

@@ -20,6 +20,9 @@ export default function Dashboard() {
             updateUserData({
               userName: data.Username || 'dummy',
               photoUrl: data.PhotoUrl,
+              income: data.Income || 0,
+              expenses: data.Expenses || 0,
+              balance: data.Balance || 0,
             })
           );
         } else {

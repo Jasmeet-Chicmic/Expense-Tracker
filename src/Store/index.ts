@@ -16,6 +16,7 @@ import api from '../Services/Api/api';
 import common from './Common';
 import loader from './Loader';
 import user from './User';
+import modal from './Modal';
 const rootPersistConfig = {
   key: 'root',
   storage,
@@ -25,6 +26,7 @@ const reducers = combineReducers({
   common,
   loader,
   user,
+  modal,
   [api.reducerPath]: api.reducer,
 });
 

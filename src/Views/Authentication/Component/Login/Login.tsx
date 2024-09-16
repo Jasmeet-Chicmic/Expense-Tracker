@@ -11,7 +11,7 @@ import { updateAuthTokenRedux } from '../../../../Store/Common';
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../../Store/Loader';
 import useNotifications from '../../../../Hooks/useNotifications';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,12 +23,28 @@ const Login = () => {
       console.log('values', values);
 
       try {
-        await setDoc(doc(db, 'users', user.uid), {
-          Username: user.displayName || 'dummy',
-          Email: user.email,
-          PhotoUrl: user.photoURL || '',
-          CreatedAt: new Date(),
-        });
+        // Reference to the user's document
+        const userDocRef = doc(db, 'users', user.uid);
+
+        // Fetch the document to check if it exists
+        const userDocSnap = await getDoc(userDocRef);
+
+        // Check if the document does not exist, then set the data
+        if (!userDocSnap.exists()) {
+          await setDoc(userDocRef, {
+            Username: user.displayName || 'dummy',
+            Email: user.email,
+            PhotoUrl: user.photoURL || '',
+            CreatedAt: new Date(),
+            Income: 0,
+            Balance: 0,
+            Expenses: 0,
+          });
+
+          console.log('User data has been set.');
+        } else {
+          console.log('User data already exists.');
+        }
       } catch (error) {
         console.log('Error setting user data: ', error);
       }

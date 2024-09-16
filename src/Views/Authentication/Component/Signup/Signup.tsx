@@ -21,16 +21,18 @@ const Signup = () => {
     console.log('values', values);
 
     try {
-    await setDoc(doc(db, 'users', user.uid), {
-      Username: values?.username,
-      Email: user.email,
-      PhotoUrl: user.photoURL || '',
-      CreatedAt: new Date(),
-    });
-  }
-  catch (error) {
-    console.log('Error setting user data: ', error);
-  }
+      await setDoc(doc(db, 'users', user.uid), {
+        Username: values?.username,
+        Email: user.email,
+        PhotoUrl: user.photoURL || '',
+        CreatedAt: new Date(),
+        Income: 0,
+        Balance: 0,
+        Expenses: 0,
+      });
+    } catch (error) {
+      console.log('Error setting user data: ', error);
+    }
   };
   const handleSignup = async (values: any) => {
     dispatch(setLoading(true));
