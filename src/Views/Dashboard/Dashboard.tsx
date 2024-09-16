@@ -5,34 +5,12 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { updateUserData } from '../../Store/User';
 import { onAuthStateChanged } from 'firebase/auth';
+import useFirbase from '../../Hooks/useFirbase';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
-
+  const { fetchUserData } = useFirbase();
   useEffect(() => {
-    const fetchUserData = async (uid: string) => {
-      try {
-        const userDoc = await getDoc(doc(db, 'users', uid));
-        if (userDoc.exists()) {
-          console.log('User data:', userDoc.data());
-          const data = userDoc.data();
-          dispatch(
-            updateUserData({
-              userName: data.Username || 'dummy',
-              photoUrl: data.PhotoUrl,
-              income: data.Income || 0,
-              expenses: data.Expenses || 0,
-              balance: data.Balance || 0,
-            })
-          );
-        } else {
-          console.log('No such document!');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in

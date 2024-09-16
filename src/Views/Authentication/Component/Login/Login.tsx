@@ -1,54 +1,29 @@
 import { useEffect } from 'react';
 import CustomForm from '../../../../Components/Shared/Form/CustomForm';
-import { auth, db, ui } from '../../../../firebase/firebase';
+import {  ui } from '../../../../firebase/firebase';
 import { LOGIN_FORM_SCHEMA } from './helper/loginSchema';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../Shared/Constants';
-import { signInWithEmailAndPassword } from 'firebase/auth/cordova';
+
 import { updateAuthTokenRedux } from '../../../../Store/Common';
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../../../../Store/Loader';
-import useNotifications from '../../../../Hooks/useNotifications';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+
+
+import useFirbase from '../../../../Hooks/useFirbase';
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { notifySuccess, notifyError } = useNotifications();
+
+  const { setUserData, signInWithEmail } = useFirbase();
+
+
+  //Social login Init
   useEffect(() => {
     // Initialize FirebaseUI Auth with config
-    const setUserData = async (user: any, values?: any) => {
-      console.log('values', values);
 
-      try {
-        // Reference to the user's document
-        const userDocRef = doc(db, 'users', user.uid);
-
-        // Fetch the document to check if it exists
-        const userDocSnap = await getDoc(userDocRef);
-
-        // Check if the document does not exist, then set the data
-        if (!userDocSnap.exists()) {
-          await setDoc(userDocRef, {
-            Username: user.displayName || 'dummy',
-            Email: user.email,
-            PhotoUrl: user.photoURL || '',
-            CreatedAt: new Date(),
-            Income: 0,
-            Balance: 0,
-            Expenses: 0,
-          });
-
-          console.log('User data has been set.');
-        } else {
-          console.log('User data already exists.');
-        }
-      } catch (error) {
-        console.log('Error setting user data: ', error);
-      }
-    };
     const uiConfig = {
       signInFlow: 'popup',
       signInSuccessUrl: ROUTES.HOMEPAGE,
@@ -69,7 +44,12 @@ const Login = () => {
             // Check if logged in via Google provider
             if (providerData === firebase.auth.GoogleAuthProvider.PROVIDER_ID) {
               console.log('User logged in with Google:', user);
-              setUserData(user);
+              setUserData(
+                user.uid,
+                user.displayName,
+                user.email,
+                user.photoURL
+              );
 
               // Dispatch the auth token to Redux store
               dispatch(updateAuthTokenRedux({ token: user?.accessToken }));
@@ -93,36 +73,9 @@ const Login = () => {
     return () => ui.reset(); // Clean up UI on component unmount
   }, []);
 
-  const handleLogin = (data: any) => {
-    dispatch(setLoading(true));
-
-    signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
-        // Signed in
-        dispatch(setLoading(false));
-        const user: any = userCredential.user;
-        if (user.emailVerified) {
-          notifySuccess('Logged in successfully!');
-          dispatch(setLoading(false));
-
-          dispatch(updateAuthTokenRedux({ token: user?.accessToken }));
-          navigate(ROUTES.HOMEPAGE);
-        } else {
-          notifyError('Please verify your email before logging in.');
-          dispatch(setLoading(false));
-
-          auth.signOut(); // Sign out the user if not verified
-        }
-
-        // ...
-      })
-      .catch((error) => {
-        notifyError(error.message);
-        dispatch(setLoading(false));
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-      });
+  const handleLogin = async (data: any) => {
+    
+    await signInWithEmail(data.email, data.password);
   };
 
   const handleForgotPassword = () => {
