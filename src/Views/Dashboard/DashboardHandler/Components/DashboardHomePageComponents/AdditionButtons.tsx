@@ -17,7 +17,7 @@ const AdditionButtons = () => {
         Add Income
       </button>
       <button
-        onClick={() => {
+        onClick={() => {  
           dispatch(openModal({ modalType: MODAL_TYPES.ADD_EXPENSE }));
         }}
         className="bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-1 px-1 rounded"

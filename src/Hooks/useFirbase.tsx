@@ -1,4 +1,11 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 import {
   createUserWithEmailAndPassword,
@@ -14,6 +21,10 @@ import { ROUTES } from '../Shared/Constants';
 import { setLoading } from '../Store/Loader';
 import { updateUserData } from '../Store/User';
 
+export enum TRANSACTION_TYPE {
+  INCOME = 'income',
+  EXPENSE = 'expense',
+}
 const useFirbase = () => {
   const { notifySuccess, notifyError } = useNotifications();
   const dispatch = useDispatch();
@@ -116,7 +127,6 @@ const useFirbase = () => {
     try {
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
-
         const data = userDoc.data();
         dispatch(
           updateUserData({
@@ -134,14 +144,130 @@ const useFirbase = () => {
       console.error('Error fetching user data:', error);
     }
   };
+  const addTransaction = async (
+    userId: string | undefined,
+    amount: number,
+    description: string,
+    transactionType: TRANSACTION_TYPE
+  ) => {
+    console.log('Adding transaction', userId, amount, description);
+    if (userId) {
+      // Add the new expense to the user's 'expenses' collection
+      await addDoc(collection(db, 'users', userId, 'transactions'), {
+        amount: amount,
+        description: description,
+        transactionType: transactionType,
+        createdAt: new Date(),
+      });
+
+      if (transactionType === TRANSACTION_TYPE.EXPENSE)
+        // Update the total expenses and balance in Firestore
+        await updateTotalExpenseAndBalance(amount);
+
+      console.log('Expense added successfully', userId, amount, description);
+    }
+  };
+
+  async function updateTotalExpenseAndBalance(amount: number) {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) {
+      console.error('User is not authenticated.');
+      return;
+    }
+
+    try {
+      // Get the user's document reference
+      const userDocRef = doc(db, 'users', userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const currentExpenses = userData?.Expenses || 0;
+        const currentBalance = userData?.Balance || 0;
+
+        // Calculate the new expenses and balance
+        const newExpenses = currentExpenses + amount;
+        const newBalance = currentBalance - amount; // Assuming balance decreases by expense amount
+
+        // Update the Expenses and Balance fields in Firestore
+        await updateDoc(userDocRef, {
+          Expenses: newExpenses,
+          Balance: newBalance,
+        });
+
+        console.log(
+          'Expenses updated to:',
+          newExpenses,
+          'Balance updated to:',
+          newBalance
+        );
+      } else {
+        console.error('User document does not exist.');
+      }
+    } catch (error) {
+      console.error('Error updating expenses and balance:', error);
+    }
+  }
+
+  const updateTotalIncomeAndBalance = async (
+    amount: number,
+    description: string
+  ) => {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) {
+      console.error('User is not authenticated.');
+      return;
+    }
+
+    try {
+      // Get the user's document reference
+      const userDocRef = doc(db, 'users', userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const currentIncome = userData?.Income || 0;
+        const currentBalance = userData?.Balance || 0;
+
+        // Calculate the new expenses and balance
+        const newIncome = currentIncome + amount;
+        const newBalance = currentBalance + amount; // Assuming balance decreases by expense amount
+
+        // Update the Expenses and Balance fields in Firestore
+        await updateDoc(userDocRef, {
+          Income: newIncome,
+          Balance: newBalance,
+        });
+        await addTransaction(
+          auth.currentUser?.uid,
+          amount,
+          description,
+          TRANSACTION_TYPE.INCOME
+        );
+        console.log(
+          'Expenses updated to:',
+          newIncome,
+          'Balance updated to:',
+          newBalance
+        );
+      } else {
+        console.error('User document does not exist.');
+      }
+    } catch (error) {
+      console.error('Error updating expenses and balance:', error);
+    }
+  };
   return {
     setUserData,
     signInWithEmail,
     createUserWithEmail,
     sendPassResetEmail,
-    fetchUserData
+    fetchUserData,
+    addTransaction,
+    updateTotalIncomeAndBalance,
   };
-  
 };
 
 export default useFirbase;

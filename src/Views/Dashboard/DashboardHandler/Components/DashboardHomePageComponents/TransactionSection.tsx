@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react';
 import { auth, db } from '../../../../../firebase/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
+import { RootState } from '../../../../../Store';
+import { useSelector } from 'react-redux';
+import { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
 
 const TransactionSection = () => {
   // Create an array of 20 dummy elements
   const [transactions, setTransactions] = useState<any[]>([]);
-
+  const expense = useSelector((state: RootState) => state.user.expenses);
+  const income = useSelector((state: RootState) => state.user.income);
   useEffect(() => {
     async function fetchUserTransactions() {
       const userId = auth.currentUser?.uid;
@@ -22,14 +26,14 @@ const TransactionSection = () => {
           db,
           'users',
           userId,
-          'expenses'
+          'transactions'
         );
 
         // Fetch all the documents from the 'expenses' collection
         const expensesSnapshot = await getDocs(expensesCollectionRef);
 
         // Map through the documents and return the data
-        const transactions = expensesSnapshot.docs.map((doc) => ({
+        let transactions = expensesSnapshot.docs.map((doc) => ({
           id: doc.id, // Include the document ID if necessary
           ...doc.data(), // Spread the rest of the document data
         }));
@@ -56,23 +60,34 @@ const TransactionSection = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [expense, income]);
   return (
-    <div className="flex-1 bg-[#1F2A38] text-xl font-bold rounded-lg p-4 flex flex-col">
+    <div className="flex-1 bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] text-xl font-bold rounded-lg p-4 flex flex-col">
       {/* Header Section */}
-      <div className="h-16">Recent Transactions</div>
+      <div className="h-16 text-black dark:text-white">Transactions</div>
 
       {/* Scrollable Section */}
       <div className="flex-1 flex flex-col overflow-y-auto space-y-4 hide-scrollbar">
         {transactions.map((transaction, index) => (
           <div
             key={index}
-            className="h-auto bg-gray-700 p-4 rounded-md text-white"
+            className={`h-auto bg-gray-300 dark:bg-gray-700 p-4 rounded-md text-white`} // Keep text white for better contrast
           >
             {/* Transaction Amount */}
-            <div className="text-lg font-semibold">${transaction.amount}</div>
+            <div
+              className={`text-lg font-bold ${
+                transaction.transactionType === TRANSACTION_TYPE.EXPENSE
+                  ? 'text-red-500 ' // Darker red with reduced transparency
+                  : 'text-green-500 ' // Darker green with reduced transparency
+              }`}
+            >
+              {transaction.transactionType === TRANSACTION_TYPE.EXPENSE
+                ? '- ₹'
+                : '+ ₹'}
+              {transaction.amount}
+            </div>
             {/* Transaction Description */}
-            <div className="text-sm text-gray-300">
+            <div className="text-sm text-gray-600 dark:text-gray-200">
               {transaction.description || 'No description provided.'}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import CustomForm from '../../../../Components/Shared/Form/CustomForm';
-import {  ui } from '../../../../firebase/firebase';
+import { ui } from '../../../../firebase/firebase';
 import { LOGIN_FORM_SCHEMA } from './helper/loginSchema';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -10,7 +10,6 @@ import { ROUTES } from '../../../../Shared/Constants';
 import { updateAuthTokenRedux } from '../../../../Store/Common';
 import { useDispatch } from 'react-redux';
 
-
 import useFirbase from '../../../../Hooks/useFirbase';
 
 const Login = () => {
@@ -19,11 +18,15 @@ const Login = () => {
 
   const { setUserData, signInWithEmail } = useFirbase();
 
-
   //Social login Init
   useEffect(() => {
     // Initialize FirebaseUI Auth with config
+    const googleLoginSuccess = async (user: any) => {
+      await setUserData(user.uid, user.displayName, user.email, user.photoURL);
 
+      // Dispatch the auth token to Redux store
+      dispatch(updateAuthTokenRedux({ token: user?.accessToken }));
+    };
     const uiConfig = {
       signInFlow: 'popup',
       signInSuccessUrl: ROUTES.HOMEPAGE,
@@ -44,15 +47,7 @@ const Login = () => {
             // Check if logged in via Google provider
             if (providerData === firebase.auth.GoogleAuthProvider.PROVIDER_ID) {
               console.log('User logged in with Google:', user);
-              setUserData(
-                user.uid,
-                user.displayName,
-                user.email,
-                user.photoURL
-              );
-
-              // Dispatch the auth token to Redux store
-              dispatch(updateAuthTokenRedux({ token: user?.accessToken }));
+              googleLoginSuccess(user);
             }
           }
 
@@ -74,7 +69,6 @@ const Login = () => {
   }, []);
 
   const handleLogin = async (data: any) => {
-    
     await signInWithEmail(data.email, data.password);
   };
 

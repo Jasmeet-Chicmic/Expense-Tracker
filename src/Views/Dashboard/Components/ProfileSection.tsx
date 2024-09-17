@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom';
-
 import { useDispatch } from 'react-redux';
 import { setLoading } from '../../../Store/Loader';
 import { signOut } from 'firebase/auth/cordova';
@@ -8,15 +7,23 @@ import { updateAuthTokenRedux } from '../../../Store/Common';
 import { ROUTES } from '../../../Shared/Constants';
 import ProfileDetails from './ProfileDetails';
 
+import ThemeToggle from './ThemeToggle';
+
 const ProfileSection = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // State for theme management
+
+  // Effect to apply theme based on state
+
+  // Handle logout
   const handleLogout = () => {
     console.log('Logout');
     dispatch(setLoading(true));
     signOut(auth)
       .then(() => {
-        console.log('signout suceess');
+        console.log('signout success');
         dispatch(setLoading(false));
         dispatch(updateAuthTokenRedux({ token: false }));
         navigate(ROUTES.LOGIN);
@@ -27,10 +34,14 @@ const ProfileSection = () => {
       });
   };
 
+  // Toggle theme handler
+
   return (
-    <div className="flex flex-col h-screen w-60 bg-gray-800 text-white">
+    <div className="flex flex-col h-screen w-60 bg-opacity-70 bg-gray-300 dark:bg-gray-800 text-black dark:text-white">
       {/* Profile Header */}
-      <ProfileDetails></ProfileDetails>
+      <ProfileDetails />
+
+      {/* Theme Toggle */}
 
       {/* Navigation Links */}
       <nav className="flex-1 p-4">
@@ -61,6 +72,7 @@ const ProfileSection = () => {
           </li>
         </ul>
       </nav>
+      <ThemeToggle></ThemeToggle>
 
       {/* Logout Button */}
       <div className="p-4 border-t border-gray-700">

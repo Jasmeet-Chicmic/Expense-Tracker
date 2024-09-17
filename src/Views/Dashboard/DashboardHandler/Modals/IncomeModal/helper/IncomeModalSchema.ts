@@ -1,5 +1,6 @@
 
 import { INPUT_TYPES } from '../../../../../../Shared/Constants';
+import { FORM_VALIDATION_MESSAGES } from '../../../../../../Shared/Validations';
 
 
 
@@ -11,7 +12,7 @@ export const INCOME_MODAL_SCHEMA = {
         placeholder: '0',
         required: true,
         schema: {
-
+            required: FORM_VALIDATION_MESSAGES().REQUIRED,
         },
     },
     Description: {

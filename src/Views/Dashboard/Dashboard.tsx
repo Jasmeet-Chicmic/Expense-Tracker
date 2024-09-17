@@ -1,9 +1,8 @@
-import { doc, getDoc } from 'firebase/firestore';
 import DashboardPageHandler from './DashboardHandler/DashboardPageHandler';
-import { auth, db } from '../../firebase/firebase';
+import { auth } from '../../firebase/firebase';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { updateUserData } from '../../Store/User';
+
 import { onAuthStateChanged } from 'firebase/auth';
 import useFirbase from '../../Hooks/useFirbase';
 
