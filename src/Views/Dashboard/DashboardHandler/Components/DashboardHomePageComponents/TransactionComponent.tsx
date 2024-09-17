@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { TRANSACTION_TYPE } from "../../../../../Hooks/useFirbase";
-
+import { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
+import { motion } from 'framer-motion';
 interface TransactionProps {
   transaction: {
     id: string;
@@ -12,9 +12,16 @@ interface TransactionProps {
   onDelete: (id: string) => void;
 }
 
-const TransactionComponent: React.FC<TransactionProps> = ({ transaction, onDelete }) => {
+const TransactionComponent: React.FC<TransactionProps> = ({
+  transaction,
+  onDelete,
+}) => {
   return (
-    <div className="h-auto bg-gray-300 dark:bg-gray-700 p-4 rounded-md text-white flex justify-between items-center">
+    <motion.div
+      initial={{ scale: 0.96 }}
+      whileHover={{ scale: 1 }}
+      className="h-auto bg-gray-300 dark:bg-gray-700 p-4 rounded-md text-white flex justify-between items-center"
+    >
       <div>
         {/* Transaction Amount */}
         <div
@@ -43,7 +50,7 @@ const TransactionComponent: React.FC<TransactionProps> = ({ transaction, onDelet
       >
         <FontAwesomeIcon icon={faTrash} />
       </button>
-    </div>
+    </motion.div>
   );
 };
 

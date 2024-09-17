@@ -1,37 +1,33 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setLoading } from '../../../Store/Loader';
-import { signOut } from 'firebase/auth/cordova';
-import { auth } from '../../../firebase/firebase';
-import { updateAuthTokenRedux } from '../../../Store/Common';
+
+
 import { ROUTES } from '../../../Shared/Constants';
 import ProfileDetails from './ProfileDetails';
 
 import ThemeToggle from './ThemeToggle';
+import { MODAL_TYPES, openModal } from '../../../Store/Modal';
 
 const ProfileSection = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  
 
   // State for theme management
 
   // Effect to apply theme based on state
 
   // Handle logout
+
   const handleLogout = () => {
-    console.log('Logout');
-    dispatch(setLoading(true));
-    signOut(auth)
-      .then(() => {
-        console.log('signout success');
-        dispatch(setLoading(false));
-        dispatch(updateAuthTokenRedux({ token: false }));
-        navigate(ROUTES.LOGIN);
+    dispatch(
+      openModal({
+        modalType: MODAL_TYPES.CONFIRMATION_MODAL,
+        modalProps: {
+          message: 'Are you sure you want to logout?',
+          title: 'Logout',
+        },
       })
-      .catch((error) => {
-        dispatch(setLoading(false));
-        console.log('Error in Logout', error);
-      });
+    );
   };
 
   // Toggle theme handler

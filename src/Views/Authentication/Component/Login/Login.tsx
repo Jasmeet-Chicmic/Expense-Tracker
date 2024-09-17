@@ -44,14 +44,14 @@ const Login = () => {
           if (user) {
             const providerData = user.providerData[0]?.providerId;
 
-            // Check if logged in via Google provider
+            
             if (providerData === firebase.auth.GoogleAuthProvider.PROVIDER_ID) {
              
               googleLoginSuccess(user);
             }
           }
 
-          // Optionally, prevent Firebase UI from redirecting
+          
           return false; // Prevent redirect after sign-in
         },
         signInFailure: (error: any) => {

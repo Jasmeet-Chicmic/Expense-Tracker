@@ -13,6 +13,7 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signOut,
 } from 'firebase/auth/cordova';
 import useNotifications from './useNotifications';
 import { useDispatch } from 'react-redux';
@@ -135,6 +136,7 @@ const useFirbase = () => {
             balance: data.Balance || 0,
           })
         );
+
         dispatch(setLoading(false));
       } else {
         dispatch(setLoading(false));
@@ -318,6 +320,21 @@ const useFirbase = () => {
       console.error('Error deleting transaction:', error);
     }
   };
+
+  const signOutUser = async () => {
+    dispatch(setLoading(true));
+    signOut(auth)
+      .then(() => {
+        console.log('signout success');
+        dispatch(setLoading(false));
+        dispatch(updateAuthTokenRedux({ token: false }));
+        navigate(ROUTES.LOGIN);
+      })
+      .catch((error) => {
+        dispatch(setLoading(false));
+        console.log('Error in Logout', error);
+      });
+  };
   return {
     setUserData,
     signInWithEmail,
@@ -327,6 +344,7 @@ const useFirbase = () => {
     addTransaction,
     updateTotalIncomeAndBalance,
     handleDeleteTransaction,
+    signOutUser
   };
 };
 

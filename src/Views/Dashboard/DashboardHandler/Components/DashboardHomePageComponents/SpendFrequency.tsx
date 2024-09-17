@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../Store';
-
+import { motion } from 'framer-motion';
 // Define the type for chart data
 interface ChartData {
   series: number[];
@@ -37,7 +37,7 @@ const SpendFrequency: React.FC = () => {
       legend: {
         position: 'bottom',
         labels: {
-          colors: ['#4B5563','#4B5563','#4B5563'], // White labels for the legend
+          colors: ['#4B5563', '#4B5563', '#4B5563'], // White labels for the legend
         },
       },
       responsive: [
@@ -68,7 +68,11 @@ const SpendFrequency: React.FC = () => {
   }, [expenses, income]);
 
   return (
-    <div className="flex-1 text-xl font-bold bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] rounded-lg p-4 flex flex-col">
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="flex-1 text-xl font-bold bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] rounded-lg p-4 flex flex-col"
+    >
       <div className="h-12 text-black dark:text-white">Spend Frequency</div>
       <div className="flex-1 flex justify-center items-center">
         <Chart
@@ -78,7 +82,7 @@ const SpendFrequency: React.FC = () => {
           width="400"
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -4,7 +4,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
 import { RootState } from '../../../../../Store';
 import { useSelector } from 'react-redux';
-
+import { motion } from 'framer-motion';
 import TransactionComponent from './TransactionComponent';
 import useFirbase, { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
 
@@ -75,7 +75,11 @@ const TransactionSection = () => {
     } catch (error) {}
   };
   return (
-    <div className="flex-1 bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] text-xl font-bold rounded-lg p-4 flex flex-col">
+    <motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="flex-1 bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] text-xl font-bold rounded-lg p-4 flex flex-col"
+    >
       {/* Header Section */}
       <div className="h-16 text-black dark:text-white">Transactions</div>
 
@@ -95,7 +99,7 @@ const TransactionSection = () => {
           ></TransactionComponent>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

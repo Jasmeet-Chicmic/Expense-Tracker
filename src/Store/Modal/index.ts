@@ -4,10 +4,11 @@ export enum MODAL_TYPES {
     ADD_EXPENSE = 'addExpense',
     ADD_BALANCE = 'addBalance',
     ADD_INCOME = 'addIncome',
+    CONFIRMATION_MODAL = 'confirmationModal',
 };
 type stateType = {
     modalType: MODAL_TYPES | null;
-    modalProps?: object;
+    modalProps?: object|any;
     isOpen: boolean;
 };
 const initialState: stateType = {
