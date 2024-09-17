@@ -31,13 +31,13 @@ const SpendFrequency: React.FC = () => {
         style: {
           fontSize: '16px',
           fontWeight: 'bold',
-          colors: ['#ffffff', '#ffffff', '#ffffff'], // White labels on pie chart slices
+          colors: ['#ffffff'], // White labels on pie chart slices
         },
       },
       legend: {
         position: 'bottom',
         labels: {
-          colors: ['#ffffff', '#ffffff', '#ffffff'], // White labels for the legend
+          colors: ['#4B5563','#4B5563','#4B5563'], // White labels for the legend
         },
       },
       responsive: [
