@@ -35,7 +35,7 @@ const AddExpenseModal = () => {
 
   return (
     <div>
-      <h2>Add New Expense</h2>
+      <h2 className="text-center font-bold text-2xl">Add New Expense</h2>
       {/* Form for adding expense */}
       <CustomForm
         id="expense-form"

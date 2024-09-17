@@ -37,11 +37,13 @@ export const returnButtonClass = (
     default:
       classname = '';
   }
+  console.log(bgColor);
+
   if (btnType === 'primary') {
-    return `${classname} text-center text-white inline-flex items-center ${bgColor || 'bg-[#14A800] hover:bg-limegreen-500 '} focus:outline-none rounded-[10.26px] font-urw-geometric-light border-2 border-solid border-[#14A800] justify-center`;
+    return `${classname} text-white justify-center bg-[#14A800] rounded-[10.26px] hover:bg-[#118B00]`;
   }
   if (btnType === 'secondary') {
-    return `${classname} text-center text-black hover:text-white inline-flex items-center border-2 border-solid border-[#14A800] bg-white hover:bg-[#218e12] rounded-[10.26px] justify-center`;
+    return `${classname} text-white justify-center bg-[#AA4A44] rounded-[10.26px] hover:bg-[#DB4A44]`;
   }
   return `cursor-pointer ${classname}`;
 };

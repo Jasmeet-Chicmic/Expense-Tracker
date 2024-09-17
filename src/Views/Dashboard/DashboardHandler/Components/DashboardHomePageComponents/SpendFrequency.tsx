@@ -3,6 +3,7 @@ import Chart from 'react-apexcharts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../../../Store';
 import { motion } from 'framer-motion';
+
 // Define the type for chart data
 interface ChartData {
   series: number[];
@@ -10,6 +11,7 @@ interface ChartData {
 }
 
 const SpendFrequency: React.FC = () => {
+  const [isDataAvailable, setIsDataAvailable] = useState(true);
   const expenses: number = useSelector(
     (state: RootState) => state.user.expenses
   ) as number;
@@ -61,10 +63,19 @@ const SpendFrequency: React.FC = () => {
 
   // Simulate fetching dynamic data
   useEffect(() => {
-    setChartData((prevData) => ({
-      ...prevData,
-      series: [expenses, income, balance], // Update the series data dynamically
-    }));
+    if (expenses === 0 && income === 0 && balance === 0) {
+      setIsDataAvailable(false);
+      return;
+    }
+    if (expenses >= 0 && income >= 0 && balance >= 0) {
+      setIsDataAvailable(true);
+      setChartData((prevData) => ({
+        ...prevData,
+        series: [expenses, income, balance], // Update the series data dynamically
+      }));
+    } else {
+      setIsDataAvailable(false);
+    }
   }, [expenses, income]);
 
   return (
@@ -75,12 +86,16 @@ const SpendFrequency: React.FC = () => {
     >
       <div className="h-12 text-black dark:text-white">Spend Frequency</div>
       <div className="flex-1 flex justify-center items-center">
-        <Chart
-          options={chartData.options}
-          series={chartData.series}
-          type="pie"
-          width="400"
-        />
+        {isDataAvailable ? (
+          <Chart
+            options={chartData.options}
+            series={chartData.series}
+            type="pie"
+            width="400"
+          />
+        ) : (
+          <h1>No data available</h1>
+        )}
       </div>
     </motion.div>
   );

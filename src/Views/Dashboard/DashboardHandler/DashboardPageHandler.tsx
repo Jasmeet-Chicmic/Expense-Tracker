@@ -12,7 +12,6 @@ const DashboardPageHandler = () => {
         return <DashboardHomePage />;
       case ROUTES.TRANSACTIONS:
         return <Transactions />;
-
       default:
         return <DashboardHomePage />;
     }

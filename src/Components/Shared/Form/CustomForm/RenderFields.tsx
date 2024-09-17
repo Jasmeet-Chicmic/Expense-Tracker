@@ -10,7 +10,6 @@ import CheckBox from '../CheckBox';
 
 import ICONS from '../../../../assets';
 
-
 interface RenderFieldProps {
   field: FormDataProps;
   id: string;
@@ -48,7 +47,8 @@ function RenderField({
     );
   };
   const renderInput = () => {
-    const className = `${field?.className} form-control`;
+    const className = `${field?.className} form-control bg-gray-100 text-gray-800 dark:text-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`;
+
     switch (field.type) {
       case INPUT_TYPES.TEXT:
       case INPUT_TYPES.EMAIL:
@@ -73,8 +73,7 @@ function RenderField({
             {...handleRegister(id)}
           />
         );
-   
-        
+
       case INPUT_TYPES.SELECT:
         return (
           <Controller
@@ -191,14 +190,14 @@ function RenderField({
         <label
           className={
             field?.labelClassName ||
-            'relative inline-block min-w-[96px] mq450:text-base font-urw-geometric-regular text-[20px] mb-[20px]'
+            'relative inline-block min-w-[96px] mq450:text-base font-urw-geometric-regular text-[20px]  text-gray-800 dark:text-white'
           }
           htmlFor={id}
         >
           {field.label}
         </label>
       )}
-      <div className={`${field.groupClassName || 'mb-[35px]'}`}>
+      <div className={`${field.groupClassName || 'mb-[30px]'}`}>
         {renderInput()}
         {field.type === INPUT_TYPES.PASSWORD && (
           <img
