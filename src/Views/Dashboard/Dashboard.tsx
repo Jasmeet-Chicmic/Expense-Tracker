@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import useFirbase from '../../Hooks/useFirbase';
 import { setLoading } from '../../Store/Loader';
+import { updateAuthTokenRedux } from '../../Store/Common';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -15,12 +16,13 @@ export default function Dashboard() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in
-        console.log('User ID:', user.uid);
+
         fetchUserData(user.uid);
-        dispatch(setLoading(false));
       } else {
         // No user is signed in
-        console.log('No user is signed in.');
+
+        dispatch(updateAuthTokenRedux({ token: false }));
+
         dispatch(setLoading(false));
       }
     });

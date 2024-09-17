@@ -4,13 +4,16 @@ import { collection, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
 import { RootState } from '../../../../../Store';
 import { useSelector } from 'react-redux';
-import { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
+
+import TransactionComponent from './TransactionComponent';
+import useFirbase, { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
 
 const TransactionSection = () => {
   // Create an array of 20 dummy elements
   const [transactions, setTransactions] = useState<any[]>([]);
   const expense = useSelector((state: RootState) => state.user.expenses);
   const income = useSelector((state: RootState) => state.user.income);
+  const { handleDeleteTransaction } = useFirbase();
   useEffect(() => {
     async function fetchUserTransactions() {
       const userId = auth.currentUser?.uid;
@@ -38,7 +41,6 @@ const TransactionSection = () => {
           ...doc.data(), // Spread the rest of the document data
         }));
 
-        console.log('User transactions:', transactions);
         setTransactions(transactions);
       } catch (error) {
         console.error('Error fetching user transactions:', error);
@@ -49,11 +51,10 @@ const TransactionSection = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in
-        console.log('User ID:', user.uid);
+
         fetchUserTransactions();
       } else {
         // No user is signed in
-        console.log('No user is signed in.');
       }
     });
 
@@ -61,6 +62,18 @@ const TransactionSection = () => {
       unsubscribe();
     };
   }, [expense, income]);
+  const handleTransactionDelete = async (
+    transactionId: string,
+    transactionType: TRANSACTION_TYPE,
+    amount: number
+  ) => {
+    try {
+      await handleDeleteTransaction(transactionId, transactionType, amount);
+      setTransactions(
+        transactions.filter((transaction) => transaction.id !== transactionId)
+      );
+    } catch (error) {}
+  };
   return (
     <div className="flex-1 bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] text-xl font-bold rounded-lg p-4 flex flex-col">
       {/* Header Section */}
@@ -69,28 +82,17 @@ const TransactionSection = () => {
       {/* Scrollable Section */}
       <div className="flex-1 flex flex-col overflow-y-auto space-y-4 hide-scrollbar">
         {transactions.map((transaction, index) => (
-          <div
+          <TransactionComponent
             key={index}
-            className={`h-auto bg-gray-300 dark:bg-gray-700 p-4 rounded-md text-white`} // Keep text white for better contrast
-          >
-            {/* Transaction Amount */}
-            <div
-              className={`text-lg font-bold ${
-                transaction.transactionType === TRANSACTION_TYPE.EXPENSE
-                  ? 'text-red-500 ' // Darker red with reduced transparency
-                  : 'text-green-500 ' // Darker green with reduced transparency
-              }`}
-            >
-              {transaction.transactionType === TRANSACTION_TYPE.EXPENSE
-                ? '- ₹'
-                : '+ ₹'}
-              {transaction.amount}
-            </div>
-            {/* Transaction Description */}
-            <div className="text-sm text-gray-600 dark:text-gray-200">
-              {transaction.description || 'No description provided.'}
-            </div>
-          </div>
+            transaction={transaction}
+            onDelete={(id: string) => {
+              handleTransactionDelete(
+                id,
+                transaction.transactionType,
+                transaction.amount
+              );
+            }}
+          ></TransactionComponent>
         ))}
       </div>
     </div>

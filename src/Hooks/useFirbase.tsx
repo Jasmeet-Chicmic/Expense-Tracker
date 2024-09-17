@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   setDoc,
@@ -19,7 +20,7 @@ import { updateAuthTokenRedux } from '../Store/Common';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../Shared/Constants';
 import { setLoading } from '../Store/Loader';
-import { updateUserData } from '../Store/User';
+import { updateAmount, updateUserData } from '../Store/User';
 
 export enum TRANSACTION_TYPE {
   INCOME = 'income',
@@ -51,13 +52,10 @@ const useFirbase = () => {
           Expenses: 0,
         });
         dispatch(setLoading(false));
-        console.log('User data has been set.');
       } else {
-        console.log('User data already exists.');
       }
     } catch (error) {
       dispatch(setLoading(false));
-      console.log('Error setting user data: ', error);
     }
   };
 
@@ -137,8 +135,10 @@ const useFirbase = () => {
             balance: data.Balance || 0,
           })
         );
+        dispatch(setLoading(false));
       } else {
-        console.log('No such document!');
+        dispatch(setLoading(false));
+        notifyError('User data not found.');
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -150,7 +150,6 @@ const useFirbase = () => {
     description: string,
     transactionType: TRANSACTION_TYPE
   ) => {
-    console.log('Adding transaction', userId, amount, description);
     if (userId) {
       // Add the new expense to the user's 'expenses' collection
       await addDoc(collection(db, 'users', userId, 'transactions'), {
@@ -163,8 +162,6 @@ const useFirbase = () => {
       if (transactionType === TRANSACTION_TYPE.EXPENSE)
         // Update the total expenses and balance in Firestore
         await updateTotalExpenseAndBalance(amount);
-
-      console.log('Expense added successfully', userId, amount, description);
     }
   };
 
@@ -195,13 +192,6 @@ const useFirbase = () => {
           Expenses: newExpenses,
           Balance: newBalance,
         });
-
-        console.log(
-          'Expenses updated to:',
-          newExpenses,
-          'Balance updated to:',
-          newBalance
-        );
       } else {
         console.error('User document does not exist.');
       }
@@ -246,17 +236,86 @@ const useFirbase = () => {
           description,
           TRANSACTION_TYPE.INCOME
         );
-        console.log(
-          'Expenses updated to:',
-          newIncome,
-          'Balance updated to:',
-          newBalance
-        );
       } else {
         console.error('User document does not exist.');
       }
     } catch (error) {
       console.error('Error updating expenses and balance:', error);
+    }
+  };
+  const handleDeleteTransaction = async (
+    transactionId: string,
+    transactionType: string,
+    amount: number
+  ) => {
+    const userId = auth.currentUser?.uid;
+
+    if (!userId) {
+      console.error('User is not authenticated.');
+      return;
+    }
+
+    dispatch(setLoading(true));
+
+    try {
+      // Reference to the transaction document
+      const transactionDocRef = doc(
+        db,
+        'users',
+        userId,
+        'transactions',
+        transactionId
+      );
+
+      // Reference to the user's document
+      const userDocRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        throw new Error('User document not found.');
+      }
+
+      const { Income, Balance, Expenses } = userDoc.data() as {
+        Income: number;
+        Expenses: number;
+        Balance: number;
+      };
+
+      let newBalance = Balance;
+      let newIncome = Income;
+      let newExpenses = Expenses;
+      if (transactionType === TRANSACTION_TYPE.EXPENSE) {
+        newBalance = Balance + amount;
+        newExpenses = Expenses - amount;
+      } else if (transactionType === TRANSACTION_TYPE.INCOME) {
+        newIncome = Income - amount;
+        newBalance = Balance - amount;
+      }
+
+      // Delete the transaction
+      await deleteDoc(transactionDocRef);
+
+      // Update user's document with new totals
+      await updateDoc(userDocRef, {
+        Income: newIncome,
+        Expenses: newExpenses,
+        Balance: newBalance,
+      });
+      dispatch(
+        updateAmount({
+          balance: newBalance,
+          income: newIncome,
+          expenses: newExpenses,
+        })
+      );
+      dispatch(setLoading(false));
+      notifySuccess('Transaction deleted successfully.');
+
+      // Update local state to remove the deleted transaction
+    } catch (error) {
+      dispatch(setLoading(false));
+      notifyError('Error deleting transaction.');
+      console.error('Error deleting transaction:', error);
     }
   };
   return {
@@ -267,6 +326,7 @@ const useFirbase = () => {
     fetchUserData,
     addTransaction,
     updateTotalIncomeAndBalance,
+    handleDeleteTransaction,
   };
 };
 

@@ -46,7 +46,7 @@ const Login = () => {
 
             // Check if logged in via Google provider
             if (providerData === firebase.auth.GoogleAuthProvider.PROVIDER_ID) {
-              console.log('User logged in with Google:', user);
+             
               googleLoginSuccess(user);
             }
           }

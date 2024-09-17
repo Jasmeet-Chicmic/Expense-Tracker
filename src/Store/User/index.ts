@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 type UserState = {
-    userName: string,
-    photoUrl: string
+    userName?: string,
+    photoUrl?: string
     income?: number,
     expenses?: number,
     balance?: number
@@ -22,6 +22,11 @@ const userSlice = createSlice({
         updateUserData: (state, action: { payload: UserState }) => {
             state.userName = action.payload.userName;
             state.photoUrl = action.payload.photoUrl;
+            state.balance = action.payload.balance;
+            state.income = action.payload.income;
+            state.expenses = action.payload.expenses;
+        },
+        updateAmount: (state, action: { payload: UserState }) => {
             state.balance = action.payload.balance;
             state.income = action.payload.income;
             state.expenses = action.payload.expenses;
@@ -49,6 +54,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { updateUserData, updateExpense, updateIncome } = userSlice.actions;
+export const { updateUserData, updateExpense, updateIncome ,updateAmount} = userSlice.actions;
 
 export default userSlice.reducer;
