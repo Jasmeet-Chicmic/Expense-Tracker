@@ -26,6 +26,7 @@ import { updateAmount, updateUserData } from '../Store/User';
 export enum TRANSACTION_TYPE {
   INCOME = 'income',
   EXPENSE = 'expense',
+  ALL="all"
 }
 const useFirbase = () => {
   const { notifySuccess, notifyError } = useNotifications();

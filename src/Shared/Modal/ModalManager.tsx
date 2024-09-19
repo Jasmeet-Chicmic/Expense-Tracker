@@ -6,6 +6,7 @@ import { RootState } from '../../Store';
 import ExpenseModal from '../../Views/Dashboard/DashboardHandler/Modals/ExpenseModal/ExpenseModal';
 import IncomeModal from '../../Views/Dashboard/DashboardHandler/Modals/IncomeModal/IncomeModal';
 import ConfirmationModal from '../../Views/Dashboard/DashboardHandler/Modals/ConfirmationModal/ConfirmationModal';
+import FilterModal from '../../Views/Dashboard/DashboardHandler/Modals/FilterModal/FilterModal';
 
 const ModalManager = () => {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ const ModalManager = () => {
   );
 
   const renderModalContent = () => {
+    
     switch (modalType) {
       case MODAL_TYPES.ADD_EXPENSE:
         return <ExpenseModal {...modalProps} />;
@@ -30,6 +32,9 @@ const ModalManager = () => {
             cancelText={modalProps?.cancelText}
           />
         );
+
+      case MODAL_TYPES.FILTER_MODAL:
+        return <FilterModal />;
       default:
         return null;
     }

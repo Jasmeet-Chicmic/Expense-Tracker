@@ -16,7 +16,7 @@ const DashboardPageHandler = () => {
         return <DashboardHomePage />;
     }
   }, [location]);
-  return <div>{renderActiveAuth}</div>;
+  return <>{renderActiveAuth}</>;
 };
 
 export default DashboardPageHandler;

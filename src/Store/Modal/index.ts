@@ -5,6 +5,7 @@ export enum MODAL_TYPES {
     ADD_BALANCE = 'addBalance',
     ADD_INCOME = 'addIncome',
     CONFIRMATION_MODAL = 'confirmationModal',
+    FILTER_MODAL = 'filterModal',
 };
 type stateType = {
     modalType: MODAL_TYPES | null;

@@ -12,12 +12,6 @@ const ProfileSection = () => {
   const dispatch = useDispatch();
   
 
-  // State for theme management
-
-  // Effect to apply theme based on state
-
-  // Handle logout
-
   const handleLogout = () => {
     dispatch(
       openModal({

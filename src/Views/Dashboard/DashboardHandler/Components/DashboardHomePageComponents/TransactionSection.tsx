@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { auth, db } from '../../../../../firebase/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
 import { RootState } from '../../../../../Store';
 import { useSelector } from 'react-redux';
@@ -24,22 +24,31 @@ const TransactionSection = () => {
       }
 
       try {
-        // Reference to the user's 'expenses' collection
-        const expensesCollectionRef = collection(
+        // Reference to the user's 'transactions' collection
+        const transactionsCollectionRef = collection(
           db,
           'users',
           userId,
           'transactions'
         );
 
-        // Fetch all the documents from the 'expenses' collection
-        const expensesSnapshot = await getDocs(expensesCollectionRef);
+        // Create a query to order by 'createdAt' in descending order and limit to 10
+        const transactionsQuery = query(
+          transactionsCollectionRef,
+          orderBy('createdAt', 'desc'), // Sort by 'createdAt' in descending order
+          limit(10) // Limit to the latest 10 transactions
+        );
+
+        // Fetch the documents that match the query
+        const transactionsSnapshot = await getDocs(transactionsQuery);
 
         // Map through the documents and return the data
-        let transactions = expensesSnapshot.docs.map((doc) => ({
+        let transactions = transactionsSnapshot.docs.map((doc) => ({
           id: doc.id, // Include the document ID if necessary
           ...doc.data(), // Spread the rest of the document data
         }));
+
+        console.log('Transactions: ', transactions);
 
         setTransactions(transactions);
       } catch (error) {
@@ -81,7 +90,7 @@ const TransactionSection = () => {
       className="flex-1 bg-opacity-70 bg-gray-300 dark:bg-[#1F2A38] text-xl font-bold rounded-lg p-4 flex flex-col"
     >
       {/* Header Section */}
-      <div className="h-16 text-black dark:text-white">Transactions</div>
+      <div className="h-16 text-black dark:text-white">Recent Transactions</div>
 
       {/* Scrollable Section */}
       <div className="flex-1 flex flex-col overflow-y-auto space-y-4 hide-scrollbar">
