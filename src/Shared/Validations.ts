@@ -10,7 +10,9 @@ export const FORM_VALIDATION_MESSAGES = (...args: any[]) => ({
   VALID_LINK: 'Please enter a valid link.',
   ANSWER_REQUIRED: 'Please add your answer to join this squad.',
   LONGER_ANSWER_REQUIRED: 'Please provide a longer answer.',
-  MAX_NUMBER: `The maximum value should be less than ${args[0]}.`
+  MAX_NUMBER: `The maximum value should be less than ${args[0]}.`,
+  ONLY_NUMBERS: 'Please enter only numbers.',
+  
 
 });
 

@@ -82,7 +82,7 @@ const useFirbase = () => {
       }
     } catch (error) {
       dispatch(setLoading(false));
-      console.log('Error creating user with email and password: ', error);
+      notifyError('Error logging in' + error);
     }
   };
 
@@ -344,7 +344,7 @@ const useFirbase = () => {
     addTransaction,
     updateTotalIncomeAndBalance,
     handleDeleteTransaction,
-    signOutUser
+    signOutUser,
   };
 };
 

@@ -1,6 +1,6 @@
 
 import { INPUT_TYPES } from '../../../../../../Shared/Constants';
-import { FORM_VALIDATION_MESSAGES } from '../../../../../../Shared/Validations';
+import { FORM_VALIDATION_MESSAGES, VALIDATION_REGEX } from '../../../../../../Shared/Validations';
 
 
 
@@ -13,6 +13,10 @@ export const EXPENSE_MODAL_SCHEMA = {
         required: true,
         schema: {
             required: FORM_VALIDATION_MESSAGES().REQUIRED,
+            pattern: {
+                value: VALIDATION_REGEX.NUMBER,
+                message: FORM_VALIDATION_MESSAGES().ONLY_NUMBERS,
+            },
         },
     },
     Description: {
