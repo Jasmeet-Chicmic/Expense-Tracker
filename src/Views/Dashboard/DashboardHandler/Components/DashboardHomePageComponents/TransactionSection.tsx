@@ -105,6 +105,7 @@ const TransactionSection = () => {
                 transaction.amount
               );
             }}
+            isRecentTransaction={false}
           ></TransactionComponent>
         ))}
       </div>

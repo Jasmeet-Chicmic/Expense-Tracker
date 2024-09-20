@@ -206,6 +206,7 @@ const Transactions = () => {
                     transaction.amount
                   )
                 }
+                isRecentTransaction={true}
               />
             ))
           ) : (

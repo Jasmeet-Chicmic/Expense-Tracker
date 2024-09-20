@@ -10,11 +10,13 @@ interface TransactionProps {
     description?: string;
   };
   onDelete: (id: string) => void;
+  isRecentTransaction: boolean;
 }
 
 const TransactionComponent: React.FC<TransactionProps> = ({
   transaction,
   onDelete,
+  isRecentTransaction,
 }) => {
   return (
     <motion.div
@@ -43,13 +45,15 @@ const TransactionComponent: React.FC<TransactionProps> = ({
       </div>
 
       {/* Delete Button with Icon */}
-      <button
-        onClick={() => onDelete(transaction.id)}
-        className="text-red-500 hover:text-red-700 transition-colors"
-        aria-label="Delete Transaction"
-      >
-        <FontAwesomeIcon icon={faTrash} />
-      </button>
+      {isRecentTransaction && (
+        <button
+          onClick={() => onDelete(transaction.id)}
+          className="text-red-500 hover:text-red-700 transition-colors"
+          aria-label="Delete Transaction"
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      )}
     </motion.div>
   );
 };
