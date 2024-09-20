@@ -4,17 +4,25 @@ import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import TransactionComponent from './DashboardHomePageComponents/TransactionComponent';
 import useFirbase, { TRANSACTION_TYPE } from '../../../../Hooks/useFirbase';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
-
+import useNotifications from '../../../../Hooks/useNotifications';
+enum TransactionOrder {
+  HIGHEST = 'highest',
+  LOWEST = 'lowest',
+  NEWEST = 'newest',
+}
 const Transactions = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [showFilter, setShowFilter] = useState(false); // Toggle state for filter section
   const [transactionType, setTransactionType] = useState<any>(
     TRANSACTION_TYPE.ALL
   ); // State for transaction type filter
-  const [amountRange, setAmountRange] = useState({ min: 0, max: 10000 }); // State for amount range filter
+
+  const [transactionOrder, setTransactionOrder] = useState<TransactionOrder>(
+    TransactionOrder.NEWEST
+  );
 
   const { handleDeleteTransaction } = useFirbase();
-
+  const { notifyError } = useNotifications();
   useEffect(() => {
     async function fetchUserTransactions() {
       const userId = auth.currentUser?.uid;
@@ -32,20 +40,32 @@ const Transactions = () => {
           userId,
           'transactions'
         );
-        let transactionsQuery = null;
-        // Create a query to order by 'createdAt' in descending order and limit to 10
 
+        let transactionsQuery = null;
+
+        // Determine the sorting based on transactionOrder
+        let orderField = 'createdAt';
+        let orderDirection: 'desc' | 'asc' = 'desc'; // Default is descending for 'NEWEST'
+
+        if (transactionOrder === TransactionOrder.HIGHEST) {
+          orderField = 'amount'; // Sort by amount for HIGHEST
+          orderDirection = 'desc';
+        } else if (transactionOrder === TransactionOrder.LOWEST) {
+          orderField = 'amount'; // Sort by amount for LOWEST
+          orderDirection = 'asc';
+        }
+
+        // Create a query based on the transaction type and sorting order
         if (transactionType === TRANSACTION_TYPE.ALL) {
           transactionsQuery = query(
             transactionsCollectionRef,
-            orderBy('createdAt', 'desc')
-            // Sort by 'createdAt' in descending order
+            orderBy(orderField, orderDirection)
           );
         } else {
           transactionsQuery = query(
             transactionsCollectionRef,
-            orderBy('createdAt', 'desc'),
-            where('transactionType', '==', transactionType) // Sort by 'createdAt' in descending order
+            orderBy(orderField, orderDirection),
+            where('transactionType', '==', transactionType)
           );
         }
 
@@ -58,28 +78,28 @@ const Transactions = () => {
           ...doc.data(), // Spread the rest of the document data
         }));
 
-        console.log('Transactions: ', transactions);
-
         setTransactions(transactions);
       } catch (error) {
         console.error('Error fetching user transactions:', error);
         return [];
       }
     }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in
-
         fetchUserTransactions();
       } else {
-        // No user is signed in
+        notifyError('User is not authenticated.');
+        // No user  is signed in
       }
     });
 
     return () => {
       unsubscribe();
     };
-  }, [transactionType]); // Refetch transactions when filters change
+  }, [transactionType, transactionOrder]); // Added transactionOrder as a dependency
+  // Refetch transactions when filters change
 
   const handleFilterTransactions = () => {
     setShowFilter(!showFilter); // Toggle the filter section
@@ -133,32 +153,38 @@ const Transactions = () => {
             </div>
 
             <div className="flex flex-col">
-              <label className="text-gray-700">Amount Range</label>
+              <label className="text-gray-700">Sort By</label>
               <div className="flex space-x-2">
-                <input
-                  type="number"
-                  className="border border-gray-300 rounded-md p-2 w-20"
-                  placeholder="Min"
-                  value={amountRange.min}
-                  onChange={(e) =>
-                    setAmountRange({
-                      ...amountRange,
-                      min: Number(e.target.value),
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  className="border border-gray-300 rounded-md p-2 w-20"
-                  placeholder="Max"
-                  value={amountRange.max}
-                  onChange={(e) =>
-                    setAmountRange({
-                      ...amountRange,
-                      max: Number(e.target.value),
-                    })
-                  }
-                />
+                <button
+                  className={`border border-gray-300 rounded-md p-2 ${
+                    transactionOrder === TransactionOrder.HIGHEST
+                      ? 'bg-blue-500 text-white'
+                      : ''
+                  }`}
+                  onClick={() => setTransactionOrder(TransactionOrder.HIGHEST)}
+                >
+                  Highest
+                </button>
+                <button
+                  className={`border border-gray-300 rounded-md p-2 ${
+                    transactionOrder === TransactionOrder.LOWEST
+                      ? 'bg-blue-500 text-white'
+                      : ''
+                  }`}
+                  onClick={() => setTransactionOrder(TransactionOrder.LOWEST)}
+                >
+                  Lowest
+                </button>
+                <button
+                  className={`border border-gray-300 rounded-md p-2 ${
+                    transactionOrder === TransactionOrder.NEWEST
+                      ? 'bg-blue-500 text-white'
+                      : ''
+                  }`}
+                  onClick={() => setTransactionOrder(TransactionOrder.NEWEST)}
+                >
+                  Newest
+                </button>
               </div>
             </div>
           </div>
