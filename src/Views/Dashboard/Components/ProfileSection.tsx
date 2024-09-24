@@ -52,14 +52,14 @@ const ProfileSection = () => {
               Transactions
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/notifications"
               className="block p-2 rounded-md hover:bg-gray-700 transition-colors"
             >
               Notifications
             </Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
       <ThemeToggle></ThemeToggle>

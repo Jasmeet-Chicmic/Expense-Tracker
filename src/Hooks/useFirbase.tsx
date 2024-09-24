@@ -21,12 +21,12 @@ import { updateAuthTokenRedux } from '../Store/Common';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../Shared/Constants';
 import { setLoading } from '../Store/Loader';
-import { updateAmount, updateUserData } from '../Store/User';
+import { updateAmount, updateUserData, updateUserName } from '../Store/User';
 
 export enum TRANSACTION_TYPE {
   INCOME = 'income',
   EXPENSE = 'expense',
-  ALL="all"
+  ALL = 'all',
 }
 const useFirbase = () => {
   const { notifySuccess, notifyError } = useNotifications();
@@ -336,7 +336,31 @@ const useFirbase = () => {
         console.log('Error in Logout', error);
       });
   };
+
+  const updateUserDetails = async (userId: string, username: string) => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        dispatch(setLoading(true));
+        await updateDoc(userDocRef, {
+          Username: username,
+        });
+        dispatch(updateUserName(username));
+        dispatch(setLoading(false));
+        notifySuccess('User details updated successfully.');
+      } else {
+        notifyError('User document not found.');
+      }
+    } catch (error) {
+      dispatch(setLoading(false));
+      console.error('Error updating user details:', error);
+    }
+  };
+
   return {
+    updateUserDetails,
     setUserData,
     signInWithEmail,
     createUserWithEmail,

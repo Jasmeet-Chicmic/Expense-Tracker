@@ -5,6 +5,7 @@ import TransactionComponent from './DashboardHomePageComponents/TransactionCompo
 import useFirbase, { TRANSACTION_TYPE } from '../../../../Hooks/useFirbase';
 import { onAuthStateChanged } from 'firebase/auth/cordova';
 import useNotifications from '../../../../Hooks/useNotifications';
+import { AnimatePresence, motion } from 'framer-motion';
 enum TransactionOrder {
   HIGHEST = 'highest',
   LOWEST = 'lowest',
@@ -126,7 +127,9 @@ const Transactions = () => {
     <div className="container mx-auto px-4 py-6 h-screen flex flex-col">
       {/* Navbar for heading and filter button */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Transactions</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          Transactions
+        </h1>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           onClick={handleFilterTransactions}
@@ -136,63 +139,76 @@ const Transactions = () => {
       </div>
 
       {/* Filter section */}
-      {showFilter && (
-        <div className="mb-6 bg-gray-100 p-4 rounded-lg">
-          <div className="flex space-x-4">
-            <div className="flex flex-col">
-              <label className="text-gray-700">Transaction Type</label>
-              <select
-                className="border border-gray-300 rounded-md p-2"
-                value={transactionType}
-                onChange={(e) => setTransactionType(e.target.value)}
-              >
-                <option value={TRANSACTION_TYPE.ALL}>All</option>
-                <option value={TRANSACTION_TYPE.INCOME}>Income</option>
-                <option value={TRANSACTION_TYPE.EXPENSE}>Expense</option>
-              </select>
-            </div>
+      <AnimatePresence>
+        {showFilter && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            className="mb-6 bg-gray-100 dark:bg-gray-800 dark:text-white text-gray-400 p-4 rounded-lg"
+          >
+            <div className="flex space-x-4">
+              <div className="flex flex-col">
+                <label>Transaction Type</label>
+                <select
+                  className="border border-gray-300 bg-transparent rounded-md p-2"
+                  value={transactionType}
+                  onChange={(e) => setTransactionType(e.target.value)}
+                >
+                  <option value={TRANSACTION_TYPE.ALL}>All</option>
+                  <option value={TRANSACTION_TYPE.INCOME}>Income</option>
+                  <option value={TRANSACTION_TYPE.EXPENSE}>Expense</option>
+                </select>
+              </div>
 
-            <div className="flex flex-col">
-              <label className="text-gray-700">Sort By</label>
-              <div className="flex space-x-2">
-                <button
-                  className={`border border-gray-300 rounded-md p-2 ${
-                    transactionOrder === TransactionOrder.HIGHEST
-                      ? 'bg-blue-500 text-white'
-                      : ''
-                  }`}
-                  onClick={() => setTransactionOrder(TransactionOrder.HIGHEST)}
-                >
-                  Highest
-                </button>
-                <button
-                  className={`border border-gray-300 rounded-md p-2 ${
-                    transactionOrder === TransactionOrder.LOWEST
-                      ? 'bg-blue-500 text-white'
-                      : ''
-                  }`}
-                  onClick={() => setTransactionOrder(TransactionOrder.LOWEST)}
-                >
-                  Lowest
-                </button>
-                <button
-                  className={`border border-gray-300 rounded-md p-2 ${
-                    transactionOrder === TransactionOrder.NEWEST
-                      ? 'bg-blue-500 text-white'
-                      : ''
-                  }`}
-                  onClick={() => setTransactionOrder(TransactionOrder.NEWEST)}
-                >
-                  Newest
-                </button>
+              <div className="flex flex-col">
+                <label className="">Sort By</label>
+                <div className="flex space-x-2">
+                  <button
+                    className={`border border-gray-300 rounded-md p-2 ${
+                      transactionOrder === TransactionOrder.HIGHEST
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                    }`}
+                    onClick={() =>
+                      setTransactionOrder(TransactionOrder.HIGHEST)
+                    }
+                  >
+                    Highest
+                  </button>
+                  <button
+                    className={`border border-gray-300 rounded-md p-2 ${
+                      transactionOrder === TransactionOrder.LOWEST
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                    }`}
+                    onClick={() => setTransactionOrder(TransactionOrder.LOWEST)}
+                  >
+                    Lowest
+                  </button>
+                  <button
+                    className={`border border-gray-300 rounded-md p-2 ${
+                      transactionOrder === TransactionOrder.NEWEST
+                        ? 'bg-blue-500 text-white'
+                        : ''
+                    }`}
+                    onClick={() => setTransactionOrder(TransactionOrder.NEWEST)}
+                  >
+                    Newest
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Transaction list container */}
-      <div className="bg-white shadow-md rounded-lg p-6 flex-1 overflow-y-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0 }}
+        className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 flex-1 overflow-y-auto"
+      >
         <div className="flex flex-col space-y-4">
           {transactions.length > 0 ? (
             transactions.map((transaction: any) => (
@@ -215,7 +231,7 @@ const Transactions = () => {
             </p>
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

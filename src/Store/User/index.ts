@@ -49,11 +49,14 @@ const userSlice = createSlice({
                 state.balance = state.balance + action.payload;
             }
 
-        }
+        },
+        updateUserName: (state, action: { payload: string }) => {
+            state.userName = action.payload;
+        },
 
     },
 });
 
-export const { updateUserData, updateExpense, updateIncome ,updateAmount} = userSlice.actions;
+export const { updateUserData, updateExpense, updateIncome, updateAmount ,updateUserName} = userSlice.actions;
 
 export default userSlice.reducer;
