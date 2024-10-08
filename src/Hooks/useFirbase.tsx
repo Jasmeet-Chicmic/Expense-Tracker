@@ -21,7 +21,14 @@ import { updateAuthTokenRedux } from '../Store/Common';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../Shared/Constants';
 import { setLoading } from '../Store/Loader';
-import { updateAmount, updateUserData, updateUserName } from '../Store/User';
+import {
+
+  setSelectedCurrency,
+  updateAmount,
+  updateUserData,
+  updateUserName,
+} from '../Store/User';
+
 
 export enum TRANSACTION_TYPE {
   INCOME = 'income',
@@ -32,7 +39,7 @@ const useFirbase = () => {
   const { notifySuccess, notifyError } = useNotifications();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  
   const setUserData = async (
     userId: string,
     displayName: string,
@@ -52,6 +59,7 @@ const useFirbase = () => {
           Income: 0,
           Balance: 0,
           Expenses: 0,
+          Currency: 'INR',
         });
         dispatch(setLoading(false));
       } else {
@@ -128,6 +136,8 @@ const useFirbase = () => {
       const userDoc = await getDoc(doc(db, 'users', uid));
       if (userDoc.exists()) {
         const data = userDoc.data();
+        console.log('Data: ', data);
+
         dispatch(
           updateUserData({
             userName: data.Username || 'dummy',
@@ -135,9 +145,11 @@ const useFirbase = () => {
             income: data.Income || 0,
             expenses: data.Expenses || 0,
             balance: data.Balance || 0,
+            currentCurrency: data.Currency || 'INR',
           })
         );
 
+    
         dispatch(setLoading(false));
       } else {
         dispatch(setLoading(false));
@@ -358,6 +370,26 @@ const useFirbase = () => {
       console.error('Error updating user details:', error);
     }
   };
+  const updateUserCurrency = async (userId: string, currency: string) => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        dispatch(setLoading(true));
+        await updateDoc(userDocRef, {
+          Currency: currency,
+        });
+        dispatch(setSelectedCurrency(currency));
+        dispatch(setLoading(false));
+      } else {
+        notifyError('User document not found.');
+      }
+    } catch (error) {
+      dispatch(setLoading(false));
+      console.error('Error updating user details:', error);
+    }
+  };
 
   return {
     updateUserDetails,
@@ -370,6 +402,7 @@ const useFirbase = () => {
     updateTotalIncomeAndBalance,
     handleDeleteTransaction,
     signOutUser,
+    updateUserCurrency,
   };
 };
 

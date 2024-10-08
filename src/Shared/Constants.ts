@@ -22,7 +22,7 @@ const WILDCARD_ROUTES = { /// This is a wildcard route that will match any path 
 const ROUTES_CONFIG = {
   HOMEPAGE: {
     path: ROUTES.HOMEPAGE,
-    title: 'Master Plan',
+    title: 'Homepage',
   },
   LOGIN: {
     path: ROUTES.LOGIN,
@@ -43,11 +43,11 @@ const ROUTES_CONFIG = {
   DASHBOARD_HOMEPAGE: {
     path: ROUTES.DASHBOARD_HOMEPAGE,
     title: 'Dashboard',
-},
+  },
   TRANSACTIONS: {
     path: ROUTES.TRANSACTIONS,
     title: 'Dashboard',
-}
+  }
 
 };
 const ALIGNMENT = {

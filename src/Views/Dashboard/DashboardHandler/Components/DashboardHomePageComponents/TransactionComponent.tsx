@@ -3,13 +3,17 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
 import { motion } from 'framer-motion';
 import { Timestamp } from 'firebase/firestore';
+import { convertCurrency } from '../../../../../Helpers/utility';
+import { useSelector } from 'react-redux';
+
+import { RootState } from '../../../../../Store';
 interface TransactionProps {
   transaction: {
     id: string;
     transactionType: string;
     amount: number;
     description?: string;
-    createdAt:Timestamp
+    createdAt: Timestamp;
   };
   onDelete: (id: string) => void;
   isRecentTransaction: boolean;
@@ -20,8 +24,10 @@ const TransactionComponent: React.FC<TransactionProps> = ({
   onDelete,
   isRecentTransaction,
 }) => {
-  console.log('Transaction is here', transaction.createdAt);
-
+  const { currencyConversionRate } = useSelector((state: any) => state.user);
+  const selectedCurrency = useSelector(
+    (state: RootState) => state.user.selectedCurrency
+  );
   return (
     <motion.div
       initial={{ scale: 0.96 }}
@@ -38,9 +44,15 @@ const TransactionComponent: React.FC<TransactionProps> = ({
           }`}
         >
           {transaction.transactionType === TRANSACTION_TYPE.EXPENSE
-            ? '- ₹'
-            : '+ ₹'}
-          {transaction.amount}
+            ? '- '
+            : '+ '}
+          {currencyConversionRate
+            ? convertCurrency(
+                transaction.amount,
+                currencyConversionRate[selectedCurrency as string],
+                selectedCurrency as string
+              )
+            : transaction.amount}
         </div>
         {/* Transaction Description */}
         <div className="text-sm text-gray-600 dark:text-gray-200">
@@ -48,21 +60,18 @@ const TransactionComponent: React.FC<TransactionProps> = ({
         </div>
       </div>
 
-
       {/* Delete Button with Icon */}
-      <div className='flex flex-col'>
-      <div>
-        {transaction.createdAt.toDate().toLocaleDateString()}
-      </div>
-      {isRecentTransaction && (
-        <button
-          onClick={() => onDelete(transaction.id)}
-          className="text-red-500 hover:text-red-700 transition-colors"
-          aria-label="Delete Transaction"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      )}
+      <div className="flex flex-col text-black dark:text-white text-sm">
+        <div>{transaction.createdAt.toDate().toLocaleDateString()}</div>
+        {isRecentTransaction && (
+          <button
+            onClick={() => onDelete(transaction.id)}
+            className="text-red-500 hover:text-red-700 transition-colors"
+            aria-label="Delete Transaction"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        )}
       </div>
     </motion.div>
   );

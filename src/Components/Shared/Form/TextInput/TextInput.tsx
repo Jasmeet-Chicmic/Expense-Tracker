@@ -14,7 +14,7 @@ export function ErrorComponent({
     return render(error);
   }
   return (
-    <span className="block text-red text-md mt-1">
+    <span className="block text-red-500 text-md mt-1">
       {(error as { message: string })?.message}
     </span>
   );

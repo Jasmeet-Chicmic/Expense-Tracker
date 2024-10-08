@@ -1,5 +1,5 @@
 import { useSnackbar } from 'notistack';
-import { firstLetterUpperCase } from '../Helpers/functions';
+import { firstLetterUpperCase } from '../Helpers/utility';
 
 export default function useNotifications() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();

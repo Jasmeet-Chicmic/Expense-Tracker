@@ -13,13 +13,14 @@ import { updateAuthTokenRedux } from '../../../../Store/Common';
 const DashboardHomePage = () => {
   const dispatch = useDispatch();
   const { fetchUserData } = useFirbase();
+
   useEffect(() => {
     dispatch(setLoading(true));
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in
         console.log('Fetch user data successful');
-        fetchUserData(user.uid);
+        await fetchUserData(user.uid);
       } else {
         // No user is signed in
 

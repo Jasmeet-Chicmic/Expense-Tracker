@@ -48,8 +48,6 @@ const TransactionSection = () => {
           ...doc.data(), // Spread the rest of the document data
         }));
 
-        console.log('Transactions: ', transactions);
-
         setTransactions(transactions);
       } catch (error) {
         console.error('Error fetching user transactions:', error);
