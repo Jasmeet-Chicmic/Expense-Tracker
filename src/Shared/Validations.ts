@@ -4,7 +4,7 @@ export const FORM_VALIDATION_MESSAGES = (...args: any[]) => ({
   MAX_LENGTH: `This input exceeds the maximum length of ${args[0]} characters.`,
   VALID_EMAIL: 'Please enter a valid email address.',
   VALID_PASSWORD: 'The password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.',
-  VALID_USERNAME: 'The username must be 4-18 characters long and contain only alphabets, alphanumeric characters, or a combination of alphanumeric characters and special characters.',
+  VALID_USERNAME: 'The username must be 4-18 characters long and contain only letters, numbers, or special characters.',
   CONFIRM_PASSWORD: 'The passwords do not match.',
   VIDEO_NAME: 'The filename must be between 5 and 18 alphanumeric characters. Special characters are not allowed.',
   VALID_LINK: 'Please enter a valid link.',

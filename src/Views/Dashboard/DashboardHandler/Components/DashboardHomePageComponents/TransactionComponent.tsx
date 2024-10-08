@@ -2,12 +2,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { TRANSACTION_TYPE } from '../../../../../Hooks/useFirbase';
 import { motion } from 'framer-motion';
+import { Timestamp } from 'firebase/firestore';
 interface TransactionProps {
   transaction: {
     id: string;
     transactionType: string;
     amount: number;
     description?: string;
+    createdAt:Timestamp
   };
   onDelete: (id: string) => void;
   isRecentTransaction: boolean;
@@ -18,6 +20,8 @@ const TransactionComponent: React.FC<TransactionProps> = ({
   onDelete,
   isRecentTransaction,
 }) => {
+  console.log('Transaction is here', transaction.createdAt);
+
   return (
     <motion.div
       initial={{ scale: 0.96 }}
@@ -44,7 +48,12 @@ const TransactionComponent: React.FC<TransactionProps> = ({
         </div>
       </div>
 
+
       {/* Delete Button with Icon */}
+      <div className='flex flex-col'>
+      <div>
+        {transaction.createdAt.toDate().toLocaleDateString()}
+      </div>
       {isRecentTransaction && (
         <button
           onClick={() => onDelete(transaction.id)}
@@ -54,6 +63,7 @@ const TransactionComponent: React.FC<TransactionProps> = ({
           <FontAwesomeIcon icon={faTrash} />
         </button>
       )}
+      </div>
     </motion.div>
   );
 };
